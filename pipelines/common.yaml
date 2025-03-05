@@ -1,0 +1,42 @@
+trigger:
+  - main
+
+name: Bicep deploy
+variables:
+  vmImageName: "ubuntu-latest"
+  bicepParamFile: "./main.parameters.bicepparam"
+  sandbox_web_deployment_token: $(sandbox_fe_deployment_token) 
+  Description: 
+  Type: String|Number|CommaDelimitedList
+  Default: -
+stages:
+  - stage: deploy
+    jobs:
+      - deployment: DeployWeb
+        displayName: deploy Web App
+        pool:
+          vmImage: $(vmImageName)
+        # creates an environment if it doesn't exist
+        environment:
+          name: "sandbox"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: useNode@1
+                  inputs:
+                    version: "22.x"
+                - checkout: self
+                - script: |
+                    npm install
+                  displayName: "install"
+                - script: |
+                    npm run build
+                  displayName: "build"
+                - task: AzureStaticWebApp@0
+                  inputs:
+                    app_location: "/"
+                    output_location: "/dist" # Leave this empty
+                    skip_app_build: true
+                    skip_api_build: true
+                    azure_static_web_apps_api_token: $(sandbox_web_deployment_token)
