@@ -1,50 +1,43 @@
-# React + TypeScript + Vite
+# Frontend Demo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Introduction
 
-Currently, two official plugins are available:
+This is a frontend demo, integrated with Azure Entra ID, Azure Web Pubsub Service Service, and APIM. The repo is based on react app, using `msal` library for authentication.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### main.tsx
 
-## Expanding the ESLint configuration
+The entry point of the application, wrapped by the `msal` provider
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### App.tsx
 
-- Configure the top-level `parserOptions` property like this:
+It checks if it's logged in or not, then return either the Login page or the Home page.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### auth-config.ts
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+Contains configurations for the `msal` library
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+- clientId: the client Id of the this frontend that registered in Microsoft ERntra ID
+- authority: http://login.microsoftonline.com/${Tenant ID}
+- redirectUri: using `window.location.origin` so that it can match different values in different environments.
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+### Login.tsx
+
+This page simply call the `adsl` to do a login, which redirects the user to the centrelised login page. It also shows a loading icon in case the redirection is slow.
+
+### Layout.tsx
+
+Websocket connection is set up here.
+
+### Home.tsx
+
+The index page, contains a button to call the APIM to get a hard coded list of tickets.
+It should render the result the page if API call succeeded.
+
+### About.tsx
+
+Contains a button used to create a ticket. At this stage this call will always failed due to lack of the role claim. This is to verify the jwt validation policy on the APIM side.
+
+## Run Local
+
+- npm i
+- npm run dev
