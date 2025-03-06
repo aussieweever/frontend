@@ -6,6 +6,7 @@ export const getToken = async (): Promise<string> => {
     const tokenRequest = {
       account: accounts[0],
       scopes: [
+        // declare the scopes for the token
         "api://nick-tasks-api/admin-tasks-api",
         "api://nick-tasks-api/user-tasks-api",
       ],
@@ -17,6 +18,7 @@ export const getToken = async (): Promise<string> => {
   }
 };
 
+// the token part can be done using an interceptor
 export const getTestData = async (token: string): Promise<string> => {
   const response = await fetch(
     "https://nick-urbis-apim.azure-api.net/tickets/api/get-tickets",

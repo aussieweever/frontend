@@ -2,10 +2,16 @@ import { WebPubSubClient } from "@azure/web-pubsub-client";
 import { useEffect } from "react";
 import { Link, Outlet } from "react-router";
 import { getToken, getWsTokenUrl } from "../service/api";
+import { useMsal } from "@azure/msal-react";
 
 function Layout() {
+  const { accounts } = useMsal();
   useEffect(() => {
     console.log("rendered at " + new Date().toISOString());
+    // check if account is ready, otherwise wait for the update to start the ws connection
+    if (accounts.length === 0) {
+      return;
+    }
     const client = new WebPubSubClient({
       getClientAccessUrl: async () => {
         const token = await getToken();
@@ -35,12 +41,13 @@ function Layout() {
     }
     connect(client);
 
+    // cleanup connection
     return () => {
       console.log("cleanup");
       client.leaveGroup("demo");
       client.stop();
     };
-  }, []);
+  }, [accounts]);
 
   return (
     <div>
